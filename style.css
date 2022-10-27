@@ -1,0 +1,22 @@
+.instagram-download-button {
+    position: absolute;
+    
+    top: 8px;
+    right: 8px;
+
+    filter: invert(1);
+    background-color: rgb(255, 255, 255);
+
+    border-radius: 100%;
+
+    z-index: 1;
+
+    cursor: pointer;
+}
+
+.instagram-download-button > img {
+    display: block;
+
+    width: 25px;
+    height: 25px;
+}

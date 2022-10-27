@@ -1,0 +1,32 @@
+{
+    "name": "InstagramDownloader",
+    "version": "1.0.0",
+    "description": "Istagram Media Downloader",
+    "author": "DiVouz",
+    
+    "manifest_version": 3,
+
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://*.instagram.com/*"],
+            "css": ["style.css"],
+            "js": ["content.js"]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "assets/download.png"
+            ],
+            "matches": ["*://*.instagram.com/*"]
+        }
+    ],
+
+    "permissions": ["management"],
+    "host_permissions": [
+        "*://*.instagram.com/*"
+    ]
+}
