@@ -21,7 +21,7 @@
             document.body.removeChild(link);
         }
 
-        if (fileType === 'jpg' || fileType === 'jpeg' || fileType === 'png') {
+        if (fileType === 'jpg' || fileType === 'jpeg' || fileType === 'png' || fileType === 'webp') {
             // file is image
 
             if (fileType !== 'jpg') {
@@ -60,9 +60,9 @@
         img.src = image;
     }
 
-    function isChildOf(/*child node*/c, /*parent node*/p){ //returns boolean
-        while((c=c.parentNode)&&c!==p); 
-        return !!c; 
+    function isChildOf(child, parent) {
+        while((child=child.parentNode)&&child!==parent); 
+        return !!child; 
     }
 
     window.onload = function() {
