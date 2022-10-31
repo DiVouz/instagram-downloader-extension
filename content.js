@@ -4,7 +4,7 @@
     // https://www.instagram.com/graphql/query/?query_hash=90709b530ea0969f002c86a89b4f2b8d&variables={"reel_ids":["${user_id}"],"location_ids":[],"precomposed_overlay":false}
     // https://www.instagram.com/graphql/query/?query_hash=45246d3fe16ccc6577e0bd297a5db1ab&variables={"highlight_reel_ids":["${highlight_id}"],"location_ids":[],"precomposed_overlay":false}
 
-    const cooldownTimer =   200;
+    const cooldownTimer = 200;
     let lastTimeFired = Date.now();
 
     async function downloadFile(fileSrc, fileName, fileType, tagType) {
@@ -102,7 +102,7 @@
 
             for (let totalMedia of totalMedias) {
                 if ((totalMedia.src && totalMedia.src !== '' && !totalMedia.src.startsWith('chrome-extension')) || (totalMedia.currentSrc && totalMedia.currentSrc !== '' && !totalMedia.currentSrc.startsWith('chrome-extension'))) {
-                    if (totalMedia.tagName == 'IMG' && (totalMedia.alt && totalMedia.alt.includes('\'s profile picture'))) {
+                    if (totalMedia.tagName === 'IMG' && (totalMedia.alt && totalMedia.alt.includes('\'s profile picture'))) {
                         // profile picture
                     } else {
                         if (!totalMedia.parentElement.querySelector('div.instagram-download-button')) {
@@ -151,12 +151,12 @@
 
                 for (let totalMedia of totalMedias) {
                     if ((totalMedia.src && totalMedia.src !== '' && !totalMedia.src.startsWith('chrome-extension')) || (totalMedia.currentSrc && totalMedia.currentSrc !== '' && !totalMedia.currentSrc.startsWith('chrome-extension'))) {
-                        if (totalMedia.tagName == 'IMG' && (totalMedia.alt && totalMedia.alt.includes('\'s profile picture'))) {
+                        if (totalMedia.tagName === 'IMG' && (totalMedia.alt && totalMedia.alt.includes('\'s profile picture'))) {
                             const articleHeader = article.querySelector('header');
                             if (isChildOf(totalMedia, articleHeader)) {
                                 // profile picture
                             }
-                        } else if (totalMedia.tagName == 'VIDEO' || (totalMedia.alt && totalMedia.alt.startsWith('Photo '))) {
+                        } else if (totalMedia.tagName === 'IMG' || totalMedia.tagName === 'VIDEO') {
                             // post media
 
                             if (!totalMedia.parentElement.querySelector('div.instagram-download-button')) {
