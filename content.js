@@ -4,7 +4,7 @@
     // https://www.instagram.com/graphql/query/?query_hash=90709b530ea0969f002c86a89b4f2b8d&variables={"reel_ids":["${user_id}"],"location_ids":[],"precomposed_overlay":false}
     // https://www.instagram.com/graphql/query/?query_hash=45246d3fe16ccc6577e0bd297a5db1ab&variables={"highlight_reel_ids":["${highlight_id}"],"location_ids":[],"precomposed_overlay":false}
 
-    const cooldownTimer = 200;
+    const cooldownTimer = 250;
     let lastTimeFired = Date.now();
 
     async function downloadFile(fileSrc, fileName, fileType, tagType) {
@@ -94,7 +94,7 @@
     }
 
     async function setAllButtons() {
-        if (window.location.pathname.startsWith('/stories/')) {
+        if (window.location.pathname.startsWith('/stories/')) { // stories
             const articleImgs = document.querySelectorAll('section section img');
             const articleVideos = document.querySelectorAll('section section video');
 
@@ -105,16 +105,16 @@
                     if (totalMedia.tagName === 'IMG' && (totalMedia.alt && totalMedia.alt.includes('\'s profile picture'))) {
                         // profile picture
                     } else {
-                        if (!totalMedia.parentElement.querySelector('div.instagram-download-button')) {
+                        if (!totalMedia.parentElement.querySelector('div.instagram-media-download-button')) {
                             totalMedia.insertAdjacentHTML('beforebegin', `
-                                <div class="instagram-download-button">
+                                <div class="instagram-download-button instagram-media-download-button">
                                     <img src="${chrome.runtime.getURL('assets/download.png')}">
                                 </div>
                             `);
 
                             const header = document.querySelector('section section header');
 
-                            const button = totalMedia.parentElement.querySelector('div.instagram-download-button');
+                            const button = totalMedia.parentElement.querySelector('div.instagram-media-download-button');
                             button.style.top = `${header.offsetHeight}px`;
                             button.addEventListener('click', async function() {                                
                                 const isHighlights = window.location.pathname.startsWith('/stories/highlights/');
@@ -129,11 +129,11 @@
                                 }
                                 
                                 if (!isHighlights) {
-                                    const username = window.location.pathname.replace('/stories/', '').split('/')[0];
+                                    const username = window.location.pathname.replaceAll('/stories/', '').split('/')[0];
                                     downloadStoryMedia(username, media_index);
                                 } else {
-                                    const username = header.querySelector('header a > img').alt.replace('\'s profile picture', '');
-                                    const highlight_id = window.location.pathname.replace('/stories/highlights/', '').replace('/', '');
+                                    const username = header.querySelector('header a > img').alt.replaceAll('\'s profile picture', '');
+                                    const highlight_id = window.location.pathname.replaceAll('/stories/highlights/', '').replaceAll('/', '');
                                     downloadHighlightStoryMedia(username, highlight_id, media_index);
                                 }
                             });
@@ -141,7 +141,7 @@
                     }
                 }
             }
-        } else {
+        } else if ((window.location.pathname === '' || window.location.pathname === '/') || window.location.pathname.startsWith('/p/')) { // home page or post page
             const articles = document.querySelectorAll('article');
             for (let article of articles) {
                 const articleImgs = article.querySelectorAll('img');
@@ -159,21 +159,21 @@
                         } else if (totalMedia.tagName === 'IMG' || totalMedia.tagName === 'VIDEO') {
                             // post media
 
-                            if (!totalMedia.parentElement.querySelector('div.instagram-download-button')) {
+                            if (!totalMedia.parentElement.querySelector('div.instagram-media-download-button')) {
                                 totalMedia.insertAdjacentHTML('beforebegin', `
-                                    <div class="instagram-download-button">
+                                    <div class="instagram-download-button instagram-media-download-button">
                                         <img src="${chrome.runtime.getURL('assets/download.png')}">
                                     </div>
                                 `);
 
-                                const button = totalMedia.parentElement.querySelector('div.instagram-download-button');
+                                const button = totalMedia.parentElement.querySelector('div.instagram-media-download-button');
                                 button.addEventListener('click', async function() {
                                     let post_id;
 
                                     const articleAs = article.querySelectorAll('a:has(div > time)');
                                     for (let articleA of articleAs) {
                                         if (articleA.href.startsWith(`${document.location.origin}/p/`) && !articleA.href.includes('liked_by')) {
-                                            post_id = articleA.href.replace(`${document.location.origin}/p/`, '').replace('/', '');
+                                            post_id = articleA.href.replaceAll(`${document.location.origin}/p/`, '').replaceAll('/', '');
                                         }
                                     }
 
@@ -200,6 +200,37 @@
                                         downloadPostMedia(post_id, dotIndexSelected);
                                     }
                                 });
+                            }
+                        }
+                    }
+                }
+            }
+        } else { // profile page
+            const headers = document.querySelectorAll('header');
+            for (let header of headers) {
+                const profileNameElement = header.querySelector('header > section > div > h2');
+                if (profileNameElement) {
+                    const username = profileNameElement.innerHTML;
+                    if (username === window.location.pathname.replaceAll('/', '')) {
+                        // profile page
+                        const headerImgs = header.querySelectorAll('img');
+                        for (let headerImg of headerImgs) {
+                            if (headerImg.alt && headerImg.alt === `${username}'s profile picture`) {
+                                // profile picture
+
+                                if (!headerImg.parentElement.parentElement.querySelector('div.instagram-profile-download-button')) {
+                                    headerImg.parentElement.insertAdjacentHTML('beforebegin', `
+                                        <div class="instagram-download-button instagram-profile-download-button">
+                                            <img src="${chrome.runtime.getURL('assets/download.png')}">
+                                        </div>
+                                    `);
+
+                                    const button = headerImg.parentElement.parentElement.querySelector('div.instagram-profile-download-button');
+                                    button.addEventListener('click', async function(event) {
+                                        downloadProfileMedia(username);
+                                        event.stopPropagation();
+                                    });
+                                }
                             }
                         }
                     }
