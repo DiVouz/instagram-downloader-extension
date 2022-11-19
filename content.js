@@ -208,7 +208,7 @@
         } else { // profile page
             const headers = document.querySelectorAll('header');
             for (let header of headers) {
-                const profileNameElement = header.querySelector('header > section > div > h2');
+                const profileNameElement = header.querySelector('header > section > div h2');
                 if (profileNameElement) {
                     const username = profileNameElement.innerHTML;
                     if (username === window.location.pathname.replaceAll('/', '')) {
@@ -217,7 +217,6 @@
                         for (let headerImg of headerImgs) {
                             if (headerImg.alt && headerImg.alt === `${username}'s profile picture`) {
                                 // profile picture
-
                                 if (!headerImg.parentElement.parentElement.querySelector('div.instagram-profile-download-button')) {
                                     headerImg.parentElement.insertAdjacentHTML('beforebegin', `
                                         <div class="instagram-download-button instagram-profile-download-button">
