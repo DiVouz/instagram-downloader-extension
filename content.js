@@ -7,6 +7,8 @@
     const cooldownTimer = 250;
     let lastTimeFired = Date.now();
 
+    let lastWindowHref;
+
     async function downloadFile(fileSrc, fileName, fileType, tagType) {
         async function download(file) {
             const fileRequest = await fetch(file);
@@ -93,7 +95,18 @@
         }
     }
 
+    function unsetAllButtons() {
+        document.querySelectorAll('.instagram-download-button').forEach((button) => {
+            button.remove();
+        });
+    }
+
     async function setAllButtons() {
+        if (lastWindowHref !== window.location.href) {
+            unsetAllButtons();
+            lastWindowHref = window.location.href;
+        }
+
         if (window.location.pathname.startsWith('/stories/')) { // stories
             const articleImgs = document.querySelectorAll('section section img');
             const articleVideos = document.querySelectorAll('section section video');
@@ -259,36 +272,38 @@
         const fetchRequest = await fetch(`https://www.instagram.com/graphql/query/?query_hash=55a3c4bad29e4e20c20ff4cdfd80f5b4&variables={"shortcode":"${post_id}"}`);
         const fetchResponse = await fetchRequest.json();
         if (fetchResponse.status === 'ok') {
-            const username = fetchResponse.data.shortcode_media.owner.username;
-            let downloadUrl;
+            if (fetchResponse.data && fetchResponse.data.shortcode_media) {
+                const username = fetchResponse.data.shortcode_media.owner.username;
+                let downloadUrl;
 
-            if (fetchResponse.data.shortcode_media.edge_sidecar_to_children) {
-                const nodes = fetchResponse.data.shortcode_media.edge_sidecar_to_children.edges;
-                if (nodes.length > 0) {
-                    if (nodes[media_index].node.is_video != true) {
+                if (fetchResponse.data.shortcode_media.edge_sidecar_to_children) {
+                    const nodes = fetchResponse.data.shortcode_media.edge_sidecar_to_children.edges;
+                    if (nodes.length > 0) {
+                        if (nodes[media_index].node.is_video != true) {
+                            // TODO: select biggest resolution and not the last one
+                            downloadUrl = nodes[media_index].node.display_resources[nodes[media_index].node.display_resources.length - 1].src;
+                        } else {
+                            downloadUrl = nodes[media_index].node.video_url;
+                        }
+                    }
+                } else {
+                    if (fetchResponse.data.shortcode_media.is_video != true) {
                         // TODO: select biggest resolution and not the last one
-                        downloadUrl = nodes[media_index].node.display_resources[nodes[media_index].node.display_resources.length - 1].src;
+                        downloadUrl = fetchResponse.data.shortcode_media.display_resources[fetchResponse.data.shortcode_media.display_resources.length - 1].src;
                     } else {
-                        downloadUrl = nodes[media_index].node.video_url;
+                        downloadUrl = fetchResponse.data.shortcode_media.video_url;
                     }
                 }
-            } else {
-                if (fetchResponse.data.shortcode_media.is_video != true) {
-                    // TODO: select biggest resolution and not the last one
-                    downloadUrl = fetchResponse.data.shortcode_media.display_resources[fetchResponse.data.shortcode_media.display_resources.length - 1].src;
-                } else {
-                    downloadUrl = fetchResponse.data.shortcode_media.video_url;
-                }
+
+                const url = new URL(downloadUrl);
+                const urlSlashSplitted = url.pathname.split('/');
+                const originalFileName = urlSlashSplitted.pop();
+                const urlDotSplitted = originalFileName.split('.');
+                const fileType = urlDotSplitted.pop();
+                const fileName = `${username}_${urlDotSplitted.pop()}`;
+
+                downloadFile(downloadUrl, fileName, fileType);
             }
-
-            const url = new URL(downloadUrl);
-            const urlSlashSplitted = url.pathname.split('/');
-            const originalFileName = urlSlashSplitted.pop();
-            const urlDotSplitted = originalFileName.split('.');
-            const fileType = urlDotSplitted.pop();
-            const fileName = `${username}_${urlDotSplitted.pop()}`;
-
-            downloadFile(downloadUrl, fileName, fileType);
         }
     }
 
