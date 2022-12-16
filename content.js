@@ -128,7 +128,7 @@
                             const header = document.querySelector('section section header');
 
                             const button = totalMedia.parentElement.querySelector('div.instagram-media-download-button');
-                            button.style.top = `${header.offsetHeight}px`;
+                            button.style.top = `${header.offsetHeight + 150}px`;
                             button.addEventListener('click', async function() {                                
                                 const isHighlights = window.location.pathname.startsWith('/stories/highlights/');
 
@@ -228,7 +228,7 @@
                         // profile page
                         const headerImgs = header.querySelectorAll('img');
                         for (let headerImg of headerImgs) {
-                            if (headerImg.alt && headerImg.alt === `${username}'s profile picture`) {
+                            if (headerImg.alt && (headerImg.alt === `${username}'s profile picture` || headerImg.alt === `Profile photo`)) {
                                 // profile picture
                                 if (!headerImg.parentElement.parentElement.querySelector('div.instagram-profile-download-button')) {
                                     headerImg.parentElement.insertAdjacentHTML('beforebegin', `
