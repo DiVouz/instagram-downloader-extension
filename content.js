@@ -129,7 +129,7 @@
 
                             const button = totalMedia.parentElement.querySelector('div.instagram-media-download-button');
                             button.style.top = `${header.offsetHeight + 150}px`;
-                            button.addEventListener('click', async function() {                                
+                            button.addEventListener('click', async function(event) {                                
                                 const isHighlights = window.location.pathname.startsWith('/stories/highlights/');
 
                                 let media_index = 0;
@@ -149,6 +149,8 @@
                                     const highlight_id = window.location.pathname.replaceAll('/stories/highlights/', '').replaceAll('/', '');
                                     downloadHighlightStoryMedia(username, highlight_id, media_index);
                                 }
+
+                                event.stopPropagation();
                             });
                         }
                     }
@@ -180,7 +182,7 @@
                                 `);
 
                                 const button = totalMedia.parentElement.querySelector('div.instagram-media-download-button');
-                                button.addEventListener('click', async function() {
+                                button.addEventListener('click', async function(event) {
                                     let post_id;
 
                                     const articleAs = article.querySelectorAll('a:has(div > time)');
@@ -211,6 +213,7 @@
                                         }
 
                                         downloadPostMedia(post_id, dotIndexSelected);
+                                        event.stopPropagation();
                                     }
                                 });
                             }
