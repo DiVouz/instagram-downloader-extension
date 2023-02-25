@@ -9,3 +9,5 @@ login to your instagram and click the download button to any media.
 > You can download any story.
 > 
 > You can download any highlighted story.
+> 
+> You can download any profile picture (not high resolution for now).
