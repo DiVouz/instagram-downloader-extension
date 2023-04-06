@@ -184,11 +184,22 @@
                                 const button = totalMedia.parentElement.querySelector('div.instagram-media-download-button');
                                 button.addEventListener('click', async function(event) {
                                     let post_id;
-
-                                    const articleAs = article.querySelectorAll('a:has(div > time)');
+                                    
+                                    const articleAs = article.querySelectorAll('a:has(div time)');
                                     for (let articleA of articleAs) {
                                         if (articleA.href.startsWith(`${document.location.origin}/p/`) && !articleA.href.includes('liked_by')) {
                                             post_id = articleA.href.replaceAll(`${document.location.origin}/p/`, '').replaceAll('/', '');
+                                            break;
+                                        }
+                                    }
+
+                                    if (!post_id) { 
+                                        const articleAs2 = article.querySelectorAll('a:has(span time)');
+                                        for (let articleA of articleAs2) {
+                                            if (articleA.href.startsWith(`${document.location.origin}/p/`) && !articleA.href.includes('liked_by')) {
+                                                post_id = articleA.href.replaceAll(`${document.location.origin}/p/`, '').replaceAll('/', '');
+                                                break;
+                                            }
                                         }
                                     }
 
