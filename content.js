@@ -23,7 +23,7 @@
             document.body.removeChild(link);
         }
 
-        if (fileType === 'jpg' || fileType === 'jpeg' || fileType === 'png' || fileType === 'webp') {
+        if (fileType === 'jpg' || fileType === 'jpeg' || fileType === 'png' || fileType === 'webp' || fileType === 'heic') {
             // file is image
 
             if (fileType !== 'jpg') {
