@@ -107,7 +107,11 @@
             lastWindowHref = window.location.href;
         }
 
-        if (window.location.pathname.startsWith('/stories/')) { // stories
+        const isStoriesPage = window.location.pathname.startsWith('/stories/');
+        const isHomePage = window.location.pathname === '' || window.location.pathname === '/';
+        const isPostPage = window.location.pathname.startsWith('/p/');
+
+        if (isStoriesPage) { // stories
             const articleImgs = document.querySelectorAll('section section img');
             const articleVideos = document.querySelectorAll('section section video');
 
@@ -156,77 +160,93 @@
                     }
                 }
             }
-        } else if ((window.location.pathname === '' || window.location.pathname === '/') || window.location.pathname.startsWith('/p/')) { // home page or post page
-            const articles = document.querySelectorAll('article');
-            for (let article of articles) {
-                const articleImgs = article.querySelectorAll('img');
-                const articleVideos = article.querySelectorAll('video');
+        } else if (isHomePage || isPostPage) { // home page
+            let articleElements = document.querySelectorAll('article');
+            
+            if (isPostPage && articleElements.length == 0) {
+                articleElements = [
+                    document.querySelectorAll('main > div > div')[0]
+                ];
+            }
 
-                const totalMedias = [...articleImgs, ...articleVideos];
+            for (let articleElement of articleElements) {
+                const articleImgs = articleElement.querySelectorAll('img');
+                const articleVideos = articleElement.querySelectorAll('video');
 
-                for (let totalMedia of totalMedias) {
-                    if ((totalMedia.src && totalMedia.src !== '' && !totalMedia.src.startsWith('chrome-extension')) || (totalMedia.currentSrc && totalMedia.currentSrc !== '' && !totalMedia.currentSrc.startsWith('chrome-extension'))) {
-                        if (totalMedia.tagName === 'IMG' && (totalMedia.alt && totalMedia.alt.includes('\'s profile picture'))) {
-                            const articleHeader = article.querySelector('header');
-                            if (isChildOf(totalMedia, articleHeader)) {
-                                // profile picture
-                            }
-                        } else if (totalMedia.tagName === 'IMG' || totalMedia.tagName === 'VIDEO') {
-                            // post media
+                const totalArticleMedias = [...articleImgs, ...articleVideos];
 
-                            if (!totalMedia.parentElement.querySelector('div.instagram-media-download-button')) {
-                                totalMedia.insertAdjacentHTML('beforebegin', `
-                                    <div class="instagram-download-button instagram-media-download-button">
-                                        <img src="${chrome.runtime.getURL('assets/download.png')}">
-                                    </div>
-                                `);
+                for (let totalArticleMedia of totalArticleMedias) {
+                    const isArticleMediaSrcValid = totalArticleMedia.src && totalArticleMedia.src !== '' && !totalArticleMedia.src.startsWith('chrome-extension');
+                    const isArticleMediaCurrentSrcValid = totalArticleMedia.currentSrc && totalArticleMedia.currentSrc !== '' && !totalArticleMedia.currentSrc.startsWith('chrome-extension');
 
-                                const button = totalMedia.parentElement.querySelector('div.instagram-media-download-button');
-                                button.addEventListener('click', async function(event) {
-                                    let post_id;
-                                    
-                                    const articleAs = article.querySelectorAll('a:has(div time)');
-                                    for (let articleA of articleAs) {
-                                        if (articleA.href.startsWith(`${document.location.origin}/p/`) && !articleA.href.includes('liked_by')) {
-                                            post_id = articleA.href.replaceAll(`${document.location.origin}/p/`, '').replaceAll('/', '');
-                                            break;
-                                        }
-                                    }
+                    if (isArticleMediaSrcValid || isArticleMediaCurrentSrcValid) {
+                        const isArticleMediaImg = totalArticleMedia.tagName === 'IMG';
+                        const isArticleMediaVideo = totalArticleMedia.tagName === 'VIDEO';
 
-                                    if (!post_id) { 
-                                        const articleAs2 = article.querySelectorAll('a:has(span time)');
-                                        for (let articleA of articleAs2) {
-                                            if (articleA.href.startsWith(`${document.location.origin}/p/`) && !articleA.href.includes('liked_by')) {
-                                                post_id = articleA.href.replaceAll(`${document.location.origin}/p/`, '').replaceAll('/', '');
-                                                break;
-                                            }
-                                        }
-                                    }
+                        if (isArticleMediaImg || isArticleMediaVideo) {
+                            if (isArticleMediaImg && (totalArticleMedia.alt && totalArticleMedia.alt.includes('\'s profile picture'))) {
+                                continue;
+                            } else {
+                                if (!totalArticleMedia.parentElement.querySelector('div.instagram-media-download-button')) {
+                                    totalArticleMedia.insertAdjacentHTML('beforebegin', `
+                                        <div class="instagram-download-button instagram-media-download-button">
+                                            <img src="${chrome.runtime.getURL('assets/download.png')}">
+                                        </div>
+                                    `);
 
-                                    if (post_id) {
-                                        let dots;
-                                        let dotIndexSelected = 0;
-                                        
-                                        if (article.querySelectorAll('article > div > div').length == 2) {
-                                            dots = article.querySelectorAll('article > div > div:nth-child(1) > div > div:nth-child(2) > div');
-                                        } else {
-                                            dots = article.querySelectorAll('article > div > div:nth-child(2) > div > div:nth-child(2) > div');
+                                    const button = totalArticleMedia.parentElement.querySelector('div.instagram-media-download-button');
+                                    button.addEventListener('click', async function(event) {
+                                        let post_id;
+
+                                        if (isPostPage) {
+                                            post_id = window.location.pathname.replaceAll('/p/', '').replaceAll('/', '');
                                         }
                                         
-                                        if (dots) {
-                                            let maxClassedFound = -1;
-                                            for (let i = 0; i < dots.length; i++) {
-                                                if (maxClassedFound == -1 || maxClassedFound < dots[i].classList.length) {
-                                                    maxClassedFound = dots[i].classList.length;
-                                                    dotIndexSelected = i;
+                                        if (!post_id) {
+                                            const articleAs = articleElement.querySelectorAll('a');
+                                            for (let articleA of articleAs) {
+                                                const linkStartString = `${document.location.origin}/p/`;
+                                                const linkEndString = '/liked_by/';
+                                                
+                                                if (articleA.href.startsWith(linkStartString) && articleA.href.endsWith(linkEndString)) {
+                                                    post_id = articleA.href.replaceAll(linkStartString, '').replaceAll(linkEndString, '');
+                                                    break;
                                                 }
                                             }
                                         }
 
-                                        downloadPostMedia(post_id, dotIndexSelected);
-                                        event.stopPropagation();
-                                    }
-                                });
+                                        if (post_id) {
+                                            let dotIndexSelected = 0;
+                                            
+                                            if (isPostPage) {
+                                                const urlParams = new URLSearchParams(window.location.search);
+                                                const media_index = urlParams.get('img_index');
+                                                if (media_index > 0) dotIndexSelected = media_index - 1;
+                                            } else {
+                                                let dots;
+
+                                                if (articleElement.querySelectorAll('article > div > div').length == 2) {
+                                                    dots = articleElement.querySelectorAll('article > div > div:nth-child(1) > div > div:nth-child(2) > div');
+                                                } else {
+                                                    dots = articleElement.querySelectorAll('article > div > div:nth-child(2) > div > div:nth-child(2) > div');
+                                                }
+                                                
+                                                if (dots) {
+                                                    let maxClassedFound = -1;
+                                                    for (let i = 0; i < dots.length; i++) {
+                                                        if (maxClassedFound == -1 || maxClassedFound < dots[i].classList.length) {
+                                                            maxClassedFound = dots[i].classList.length;
+                                                            dotIndexSelected = i;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            
+                                            downloadPostMedia(post_id, dotIndexSelected);
+                                            event.stopPropagation();
+                                        }
+                                    });
+                                }
                             }
                         }
                     }

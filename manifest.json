@@ -1,9 +1,10 @@
 {
     "name": "InstagramDownloader",
-    "version": "1.1.0",
     "description": "Istagram Media Downloader",
     "author": "DiVouz",
     
+    "version": "1.1.1",
+
     "manifest_version": 3,
 
     "content_scripts": [
@@ -21,7 +22,6 @@
             "matches": ["*://*.instagram.com/*"]
         }
     ],
-
     "permissions": [],
     "host_permissions": [
         "*://*.instagram.com/*"
