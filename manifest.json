@@ -22,8 +22,5 @@
             "matches": ["*://*.instagram.com/*"]
         }
     ],
-    "permissions": [],
-    "host_permissions": [
-        "*://*.instagram.com/*"
-    ]
+    "permissions": []
 }
