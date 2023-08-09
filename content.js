@@ -149,9 +149,11 @@
         } else if (isHomePage || isPostPage) { // home page
             let articleElements = document.querySelectorAll('article');
             
+            const isPostModalOpen = isPostPage && articleElements.length !== 0;
+
             if (isPostPage && articleElements.length == 0) {
                 articleElements = [
-                    document.querySelectorAll('main > div > div')[0]
+                    document.querySelector('main > div > div > div > div:nth-child(1)')
                 ];
             }
 
@@ -203,32 +205,29 @@
                                             }
     
                                             if (post_id) {
+                                                let dots;
                                                 let dotIndexSelected = 0;
-                                                
-                                                if (isPostPage) {
-                                                    const urlParams = new URLSearchParams(window.location.search);
-                                                    const media_index = urlParams.get('img_index');
-                                                    if (media_index > 0) dotIndexSelected = media_index - 1;
+
+                                                if (isPostPage && !isPostModalOpen) {
+                                                    dots = articleElement.querySelectorAll(':scope > div > div > div > div > div > div:nth-child(2) > div');
                                                 } else {
-                                                    let dots;
-    
                                                     if (articleElement.querySelectorAll('article > div > div').length == 2) {
                                                         dots = articleElement.querySelectorAll('article > div > div:nth-child(1) > div > div:nth-child(2) > div');
                                                     } else {
-                                                        dots = articleElement.querySelectorAll('article > div > div:nth-child(2) > div > div:nth-child(2) > div');
-                                                    }
-                                                    
-                                                    if (dots) {
-                                                        let maxClassedFound = -1;
-                                                        for (let i = 0; i < dots.length; i++) {
-                                                            if (maxClassedFound == -1 || maxClassedFound < dots[i].classList.length) {
-                                                                maxClassedFound = dots[i].classList.length;
-                                                                dotIndexSelected = i;
-                                                            }
-                                                        }
+                                                        dots = articleElement.querySelectorAll('article > div > div:nth-child(2) > div > div > div > div > div:nth-child(2) > div');
                                                     }
                                                 }
                                                 
+                                                if (dots) {
+                                                    let maxClassedFound = -1;
+                                                    for (let i = 0; i < dots.length; i++) {
+                                                        if (maxClassedFound == -1 || maxClassedFound < dots[i].classList.length) {
+                                                            maxClassedFound = dots[i].classList.length;
+                                                            dotIndexSelected = i;
+                                                        }
+                                                    }
+                                                }
+
                                                 downloadPostMedia(post_id, dotIndexSelected);
                                                 event.stopPropagation();
                                             }
