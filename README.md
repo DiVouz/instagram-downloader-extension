@@ -1,4 +1,4 @@
-> :heavy_exclamation_mark: **Warning**   
+> :red_circle: **Warning**   
 >Downloading content from Instagram without the creator's permission may violate the platform's terms of service and copyright laws
 
 # Instagram Downloader Extension
@@ -15,7 +15,7 @@ A [Chrome](https://www.google.com/chrome) and [Firefox](https://www.mozilla.org/
 
 ### Firefox (temporary):
 
-> **Note**  
+> :large_blue_circle: **Note**  
 > The add-on will be installed temporarily, and you can use it until you close the browser.
 
 1) Navigate to firefox's debugging page [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox).
