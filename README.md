@@ -1,4 +1,4 @@
-> **Warning**   
+> :heavy_exclamation_mark: **Warning**   
 >Downloading content from Instagram without the creator's permission may violate the platform's terms of service and copyright laws
 
 # Instagram Downloader Extension
