@@ -30,7 +30,7 @@
             download(fileSrc);
         } else if (fileType === 'mp4') {
             // file is video
-            
+
             fileName = `${fileName}.${fileType}`;
             download(fileSrc);
         } else {
@@ -92,9 +92,9 @@
         const isHomePage = window.location.pathname === '' || window.location.pathname === '/';
         const isPostPage = window.location.pathname.startsWith('/p/');
 
-        if (isStoriesPage || isHighlightsPage) { // stories page && highlights page     
-            const articleImgs = document.querySelectorAll('section section img');
-            const articleVideos = document.querySelectorAll('section section video');
+        if (isStoriesPage || isHighlightsPage) { // stories page && highlights page
+            const articleImgs = document.querySelectorAll('section :not(header) img');
+            const articleVideos = document.querySelectorAll('section :not(header) video');
 
             const totalMedias = [...articleImgs, ...articleVideos];
 
@@ -116,7 +116,7 @@
                                     </div>
                                 `);
     
-                                const header = document.querySelector('section section header');
+                                const header = document.querySelector('section header');
     
                                 const button = totalMedia.parentElement.querySelector('div.instagram-media-download-button');
                                 button.style.top = `${header.offsetHeight + 150}px`;
